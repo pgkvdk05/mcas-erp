@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Allow admin and teachers to view all profiles" ON public.profiles;
