@@ -48,7 +48,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           )}
           <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
             <img src="/collogo.png" alt="Mangalam College of Arts and Science Logo" className="h-9" />
-            <div className="font-extrabold text-xl md:text-2xl tracking-tight">Mangalam College Of Arts and Science</div>
+            <div className="font-extrabold text-xl md:text-2xl tracking-tight">Mangalam College of Arts and Science</div>
           </Link>
         </div>
         <nav className="flex items-center space-x-4">
