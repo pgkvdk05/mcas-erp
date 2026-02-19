@@ -45,7 +45,7 @@ const Index: React.FC = () => {
                       bg-gradient-to-br from-background via-secondary to-primary/10
                       bg-[length:200%_200%] animate-gradient-shift">
         <h1 className="text-5xl font-extrabold text-primary mb-8 text-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          Welcome to Mangalam College
+          Welcome to Mangalam College Of Arts and Science
         </h1>
         <p className="text-xl text-muted-foreground mb-12 text-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
           Please select your role to proceed to the ERP system.
