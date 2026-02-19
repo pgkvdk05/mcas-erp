@@ -224,3 +224,14 @@ In the project directory, you can run:
 *   `npm run build`: Builds the app for production to the `dist` folder.
 *   `npm run lint`: Lints the project files.
 *   `npm run preview`: Serves the `dist` folder locally for previewing the production build.
+
+## Deployment Recommendations
+
+To make deployments faster, more reliable, and prevent frontend-backend mismatches, consider the following:
+
+1.  **Build Multiple Deployments Simultaneously:** Configure your hosting (e.g., Vercel) to allow concurrent builds or enable "Builds in Parallel" so you never wait for a queued build.
+2.  **Switch to a Bigger Build Machine:** If builds are slow, increase your build machine size to reduce build time (can be up to ~40% faster depending on workload).
+3.  **Prevent Frontend-Backend Mismatches:** Automate syncing client and server versions—tag releases, use the same commit SHAs for backend and frontend, or embed API version checks during startup to avoid conflicts.
+4.  **Find & Configure a Custom Domain:** Purchase and configure a custom domain for production. Many hosts (including Vercel) offer fast, private, at-cost domains and simple DNS setup.
+
+Tip: If you're deploying on Vercel, review `vercel.json` or your project settings to set the preferred build machine, concurrency options, and domain configuration. Keep CI/CD deploy previews enabled for pull requests to catch mismatches early.
