@@ -9,23 +9,13 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { LogOut, Menu, X } from 'lucide-react';
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-  userRole?: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | null;
-}
-
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, userRole, loading } = useSession();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -50,14 +40,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
+              aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               className="text-primary-foreground hover:bg-primary-foreground/20 hidden md:flex"
             >
               {isSidebarCollapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
             </Button>
           )}
           <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <img src="/collogo.png" alt="College Logo" className="h-9" />
-            <div className="font-extrabold text-xl md:text-2xl tracking-tight">Mangalam College</div>
+            <img src="/collogo.png" alt="Mangalam College of Arts and Science Logo" className="h-9" />
+            <div className="font-extrabold text-xl md:text-2xl tracking-tight">Mangalam College Of Arts and Science</div>
           </Link>
         </div>
         <nav className="flex items-center space-x-4">
@@ -65,7 +56,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <span className="text-sm md:text-base font-medium opacity-90">Role: {userRole.replace('_', ' ')}</span>
           )}
           {user && (
-            <Button variant="ghost" onClick={handleLogout} className="text-sm md:text-base hover:underline text-primary-foreground flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              aria-label="Logout"
+              className="text-sm md:text-base hover:underline text-primary-foreground flex items-center space-x-2"
+            >
               <LogOut className="h-4 w-4" />
               <span className="hidden md:inline">Logout</span>
             </Button>
@@ -75,6 +71,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               variant="ghost"
               size="icon"
               onClick={toggleMobileMenu}
+              aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
               className="text-primary-foreground hover:bg-primary-foreground/20 md:hidden"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -106,7 +103,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </div>
 
       <footer className="text-center text-sm text-muted-foreground p-4 border-t border-border">
-        &copy; 2025 Mangalam College of Arts and Science
+        &copy; {new Date().getFullYear()} Mangalam College of Arts and Science
       </footer>
     </div>
   );
