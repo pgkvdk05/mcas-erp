@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import { useSession } from '@/components/auth/SessionContextProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { LogOut, Menu, X } from 'lucide-react';
 
@@ -18,7 +19,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+      showError('Logout failed. Please try again.');
+    } else {
+      showSuccess('Logging out...');
+    }
   };
 
   if (loading) {
