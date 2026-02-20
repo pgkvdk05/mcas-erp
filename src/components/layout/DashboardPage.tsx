@@ -9,6 +9,7 @@ import {
   Users, BookUser, GraduationCap, Building2, BookOpen, DollarSign, CalendarCheck,
   ClipboardList, FileText, MessageSquareText, LayoutDashboard, User
 } from 'lucide-react';
+import QuickStartStats from './QuickStartStats';
 import { useSession } from '@/components/auth/SessionContextProvider';
 
 interface DashboardPageProps {
@@ -20,15 +21,9 @@ const dashboardConfig = {
     title: 'Super Admin Dashboard',
     sections: [
       {
-        title: 'Quick Stats',
+        title: 'Quick Start',
         description: '',
-        type: 'stats',
-        items: [
-          { title: 'Total Users', value: '2,350', trend: '+180 this month', icon: Users, href: '/erp/manage-users' },
-          { title: 'Active Departments', value: '5', trend: 'All active', icon: Building2, href: '/erp/manage-departments' },
-          { title: 'Total Courses', value: '45', trend: '+5 new this semester', icon: BookOpen, href: '/erp/manage-courses' },
-          { title: 'Pending OD Requests', value: '0', trend: 'Requires immediate action', icon: CalendarCheck, href: '/erp/od/approve' },
-        ],
+        type: 'quickstart',
       },
       {
         title: 'User Management',
@@ -184,6 +179,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole: propUserRole })
               {section.description && <CardDescription className="text-muted-foreground">{section.description}</CardDescription>}
             </CardHeader>
             <CardContent>
+              {section.type === 'quickstart' && (
+                <QuickStartStats />
+              )}
               {section.type === 'stats' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {section.items.map((item, itemIndex) => {

@@ -47,27 +47,73 @@ const ManageDepartments: React.FC = () => {
 
   const handleAddDepartment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newDepartmentName.trim() || !newDepartmentCode.trim()) {
+    const name = newDepartmentName.trim();
+    const code = newDepartmentCode.trim().toUpperCase();
+
+    if (!name || !code) {
       toast.error('Please enter both department name and code.');
       return;
     }
 
     setIsSubmitting(true);
-    const { data, error } = await supabase
-      .from('departments')
-      .insert([{ name: newDepartmentName.trim(), code: newDepartmentCode.trim().toUpperCase() }])
-      .select();
 
-    if (error) {
-      console.error('Error adding department:', error);
-      toast.error('Failed to add department.', { description: error.message });
-    } else if (data && data.length > 0) {
-      toast.success(`Department '${newDepartmentName}' added successfully.`);
-      setNewDepartmentName('');
-      setNewDepartmentCode('');
-      fetchDepartments();
+    try {
+      // Quick existence check to provide immediate feedback
+      const { data: existingByName } = await supabase
+        .from('departments')
+        .select('id')
+        .ilike('name', name);
+
+      if (existingByName && existingByName.length > 0) {
+        toast.error('A department with this name already exists.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { data: existingByCode } = await supabase
+        .from('departments')
+        .select('id')
+        .eq('code', code);
+
+      if (existingByCode && existingByCode.length > 0) {
+        toast.error('A department with this code already exists.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('departments')
+        .insert([{ name, code }])
+        .select();
+
+      if (error) {
+        console.error('Error adding department:', error);
+        // Friendly messages for unique constraint violations. Handle both
+        // old constraint names and new functional index names.
+        const msg = (error.message || '').toLowerCase();
+        if (msg.includes('duplicate key value') || msg.includes('unique')) {
+          if (msg.includes('name') || msg.includes('departments_name_key') || msg.includes('idx_departments_name_lower')) {
+            toast.error('Failed to add department: name already in use.');
+          } else if (msg.includes('code') || msg.includes('departments_code_key') || msg.includes('idx_departments_code_upper')) {
+            toast.error('Failed to add department: code already in use.');
+          } else {
+            toast.error('Failed to add department: duplicate value.');
+          }
+        } else {
+          toast.error('Failed to add department.', { description: msg });
+        }
+      } else if (data && data.length > 0) {
+        toast.success(`Department '${name}' added successfully.`);
+        setNewDepartmentName('');
+        setNewDepartmentCode('');
+        fetchDepartments();
+      }
+    } catch (err: any) {
+      console.error('Unexpected error adding department:', err);
+      toast.error('Failed to add department.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const handleDeleteDepartment = async (id: string, name: string) => {
