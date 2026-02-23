@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./globals.css";
+import "./i18n/config.ts";
 import { SessionContextProvider } from "./components/auth/SessionContextProvider.tsx";
 import { BrowserRouter } from "react-router-dom";
 
