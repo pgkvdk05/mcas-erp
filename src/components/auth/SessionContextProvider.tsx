@@ -67,32 +67,45 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
       }
     );
 
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
-      setSession(initialSession);
-      setUser(initialSession?.user || null);
-      if (initialSession?.user) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', initialSession.user.id)
-          .single();
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const initialSession = data?.session || null;
+        setSession(initialSession);
+        setUser(initialSession?.user || null);
 
-        if (error) {
-          console.error('Error fetching initial user profile:', error);
-          setUserRole(null);
-        } else if (profile) {
-          setUserRole(profile.role as 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT');
+        if (initialSession?.user) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', initialSession.user.id)
+            .single();
+
+          if (error) {
+            console.error('Error fetching initial user profile:', error);
+            setUserRole(null);
+          } else if (profile) {
+            setUserRole(profile.role as 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT');
+          } else {
+            setUserRole(null);
+          }
         } else {
           setUserRole(null);
         }
-      } else {
+      } catch (err) {
+        console.error('Error during initial session fetch:', err);
         setUserRole(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    })();
 
     return () => {
-      authListener.subscription.unsubscribe();
+      try {
+        authListener?.subscription?.unsubscribe();
+      } catch (e) {
+        // ignore unsubscribe errors
+      }
     };
   }, [navigate]);
 

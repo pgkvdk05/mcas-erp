@@ -1,3 +1,4 @@
+````markdown
 # Mangalam College ERP System
 
 This is a comprehensive Enterprise Resource Planning (ERP) system designed for Mangalam College of Arts and Science. It provides various modules for managing students, teachers, departments, courses, attendance, marks, fees, and communication, with distinct access levels for different user roles.
@@ -235,3 +236,38 @@ To make deployments faster, more reliable, and prevent frontend-backend mismatch
 4.  **Find & Configure a Custom Domain:** Purchase and configure a custom domain for production. Many hosts (including Vercel) offer fast, private, at-cost domains and simple DNS setup.
 
 Tip: If you're deploying on Vercel, review `vercel.json` or your project settings to set the preferred build machine, concurrency options, and domain configuration. Keep CI/CD deploy previews enabled for pull requests to catch mismatches early.
+
+## Footer / Social icons
+
+This project includes a site-wide `Footer` component with social media icons (Instagram, Facebook, YouTube, LinkedIn).
+
+Installation (adds icons):
+
+```bash
+pnpm add react-icons
+# or
+npm install react-icons
+```
+
+Usage (copy the `Footer` into `src/components/layout/Footer.tsx`):
+
+```tsx
+import Footer from './components/layout/Footer';
+
+function App(){
+  return (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1">{/* app content */}</main>
+      <Footer />
+    </div>
+  )
+}
+```
+
+Accessibility & behavior:
+
+- Icons open in a new tab with `rel="noopener noreferrer"`.
+- Each icon has an `aria-label` and `sr-only` text for screen readers.
+- Hover effects and responsive layout are implemented with Tailwind CSS.
+
+````

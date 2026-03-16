@@ -151,13 +151,17 @@ const ManageCourses: React.FC = () => {
               <div className="md:col-span-1">
                 <Label htmlFor="newCourseDepartment" className="text-sm font-medium">Department</Label>
                 <Select onValueChange={setNewCourseDepartmentId} value={newCourseDepartmentId} required>
-                  <SelectTrigger id="newCourseDepartment" className="mt-1">
-                    <SelectValue placeholder="Select Department" />
+                  <SelectTrigger id="newCourseDepartment" className="mt-1" disabled={loadingDepts}>
+                    <SelectValue placeholder={loadingDepts ? 'Loading departments...' : 'Select Department (CODE — Name)'} />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
-                    ))}
+                    {departments.length === 0 && !loadingDepts ? (
+                      <SelectItem value="" disabled>No departments available</SelectItem>
+                    ) : (
+                      departments.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>{`${dept.code} — ${dept.name}`}</SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
