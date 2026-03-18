@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -22,79 +22,75 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Use a ref so navigate never triggers the effect to re-run
+  const navigateRef = useRef(navigate);
+  useEffect(() => { navigateRef.current = navigate; }, [navigate]);
+
   useEffect(() => {
+    let mounted = true;
+
+    const fetchRole = async (userId: string) => {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      if (!mounted) return null;
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        showError('Failed to load user role.');
+        return null;
+      }
+      return profile?.role as 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | null;
+    };
+
+    // Single source of truth — onAuthStateChange handles INITIAL_SESSION too
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
+        if (!mounted) return;
+
         setSession(currentSession);
-        setUser(currentSession?.user || null);
+        setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', currentSession.user.id)
-            .single();
+          const role = await fetchRole(currentSession.user.id);
+          if (!mounted) return;
 
-          if (error) {
-            console.error('Error fetching user profile:', error);
-            showError('Failed to load user role.');
-            setUserRole(null);
-            setLoading(false);
-          } else if (profile) {
-            setUserRole(profile.role as 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT');
-            setLoading(false);
-          } else {
-            setUserRole(null);
-            setLoading(false);
-          }
+          setUserRole(role);
+          setLoading(false);
 
           if (event === 'SIGNED_IN') {
             showSuccess('Logged in successfully!');
-            if (profile?.role) {
-              navigate(`/dashboard/${profile.role.toLowerCase().replace('_', '-')}`);
-            } else {
-              navigate('/dashboard/student');
-            }
+            const path = role
+              ? `/dashboard/${role.toLowerCase().replace('_', '-')}`
+              : '/dashboard/student';
+            navigateRef.current(path);
           }
         } else {
           setUserRole(null);
+          setLoading(false);
+
           if (event === 'SIGNED_OUT') {
             showSuccess('Logged out successfully!');
-            navigate('/');
+            navigateRef.current('/');
           }
-          setLoading(false);
         }
       }
     );
 
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
-      setSession(initialSession);
-      setUser(initialSession?.user || null);
-      if (initialSession?.user) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', initialSession.user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching initial user profile:', error);
-          setUserRole(null);
-        } else if (profile) {
-          setUserRole(profile.role as 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT');
-        } else {
-          setUserRole(null);
-        }
-      } else {
-        setUserRole(null);
-      }
-      setLoading(false);
-    });
+    // Safety net: if onAuthStateChange never fires (e.g. network issue), stop loading after 8s
+    const timeout = setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 8000);
 
     return () => {
+      mounted = false;
+      clearTimeout(timeout);
       authListener.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, []); // ← empty deps: runs once only
 
   return (
     <SessionContext.Provider value={{ session, user, userRole, loading }}>
