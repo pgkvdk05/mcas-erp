@@ -10,7 +10,7 @@ import {
   MessageSquareText, CalendarCheck, FileText, User,
   PanelLeft, PanelRight, X,
 } from 'lucide-react';
-import { useSession } from '@/components/auth/SessionContextProvider';
+import { useSession } from '@/components/auth/useSession';
 import {
   Tooltip,
   TooltipContent,

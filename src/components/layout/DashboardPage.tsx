@@ -7,12 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import {
   Users, BookUser, GraduationCap, Building2, BookOpen, DollarSign, CalendarCheck,
-  ClipboardList, FileText, MessageSquareText, LayoutDashboard, User
+  User
 } from 'lucide-react';
-import { useSession } from '@/components/auth/SessionContextProvider';
+import { useSession } from '@/components/auth/useSession';
 import { supabase } from '@/integrations/supabase/client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type NavItem = {
+  name: string;
+  href: string;
+  icon?: React.ElementType;
+  variant?: string;
+};
 
 interface DashboardPageProps {
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT';
@@ -371,12 +378,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole: propUserRole })
               {section.type === 'links' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {section.items.map((item, itemIndex) => {
-                    const Icon = item.icon;
+                    const Icon = (item as NavItem).icon;
                     return (
                       <Button
                         key={itemIndex}
                         asChild
-                        variant={(item.variant as 'default' | 'outline') || 'default'}
+                        variant={((item as NavItem).variant as 'default' | 'outline') || 'default'}
                         className="h-12 text-base font-semibold"
                       >
                         <Link to={item.href} className="flex items-center justify-center space-x-2">
