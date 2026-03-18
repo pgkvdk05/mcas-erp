@@ -1,19 +1,20 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { showSuccess, showError } from '@/utils/toast';
 
-interface SessionContextType {
+export interface SessionContextType {
   session: Session | null;
   user: User | null;
   userRole: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | null;
   loading: boolean;
 }
 
-const SessionContext = createContext<SessionContextType | undefined>(undefined);
+// eslint-disable-next-line react-refresh/only-export-components
+export const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -22,7 +23,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Use a ref so navigate never triggers the effect to re-run
   const navigateRef = useRef(navigate);
   useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
@@ -37,7 +37,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         .single();
 
       if (!mounted) return null;
-
       if (error) {
         console.error('Error fetching user profile:', error);
         showError('Failed to load user role.');
@@ -46,7 +45,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
       return profile?.role as 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT' | null;
     };
 
-    // Single source of truth — onAuthStateChange handles INITIAL_SESSION too
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         if (!mounted) return;
@@ -57,7 +55,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         if (currentSession?.user) {
           const role = await fetchRole(currentSession.user.id);
           if (!mounted) return;
-
           setUserRole(role);
           setLoading(false);
 
@@ -71,7 +68,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         } else {
           setUserRole(null);
           setLoading(false);
-
           if (event === 'SIGNED_OUT') {
             showSuccess('Logged out successfully!');
             navigateRef.current('/');
@@ -80,7 +76,6 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
       }
     );
 
-    // Safety net: if onAuthStateChange never fires (e.g. network issue), stop loading after 8s
     const timeout = setTimeout(() => {
       if (mounted) setLoading(false);
     }, 8000);
@@ -90,19 +85,11 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
       clearTimeout(timeout);
       authListener.subscription.unsubscribe();
     };
-  }, []); // ← empty deps: runs once only
+  }, []);
 
   return (
     <SessionContext.Provider value={{ session, user, userRole, loading }}>
       {children}
     </SessionContext.Provider>
   );
-};
-
-export const useSession = () => {
-  const context = useContext(SessionContext);
-  if (context === undefined) {
-    throw new Error('useSession must be used within a SessionContextProvider');
-  }
-  return context;
 };
