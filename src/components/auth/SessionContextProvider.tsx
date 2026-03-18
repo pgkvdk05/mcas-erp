@@ -93,3 +93,5 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
     </SessionContext.Provider>
   );
 };
+// eslint-disable-next-line react-refresh/only-export-components
+export { useSession } from './useSession';
