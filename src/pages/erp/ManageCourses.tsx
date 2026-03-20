@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useDepartments } from '@/hooks/useDepartments';
 import PageHeader from '@/components/layout/PageHeader';
+import { Loader2 } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -19,15 +20,14 @@ interface Course {
   code: string;
   department_id: string;
   credits: number;
-  departments?: {
-    name: string;
-  };
+  departments?: { name: string };
 }
 
 const ManageCourses: React.FC = () => {
   const { departments, loading: loadingDepts } = useDepartments();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [newCourseName, setNewCourseName] = useState('');
   const [newCourseCode, setNewCourseCode] = useState('');
@@ -35,27 +35,20 @@ const ManageCourses: React.FC = () => {
   const [newCourseCredits, setNewCourseCredits] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
+  useEffect(() => { fetchCourses(); }, []);
 
   const fetchCourses = async () => {
     setLoadingCourses(true);
     const { data, error } = await supabase
       .from('courses')
-      .select(`
-        *,
-        departments (
-          name
-        )
-      `)
+      .select(`*, departments(name)`)
       .order('name');
 
     if (error) {
       console.error('Error fetching courses:', error);
-      toast.error('Failed to load courses');
+      toast.error('Failed to load courses: ' + error.message);
     } else {
-      setCourses(data as unknown as Course[]);
+      setCourses((data ?? []) as unknown as Course[]);
     }
     setLoadingCourses(false);
   };
@@ -63,23 +56,20 @@ const ManageCourses: React.FC = () => {
   const handleAddCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCourseName.trim() || !newCourseCode.trim() || !newCourseDepartmentId || !newCourseCredits) {
-      toast.error('Please fill all fields for the new course.');
+      toast.error('Please fill all fields.');
       return;
     }
-
     setIsSubmitting(true);
-    const { error } = await supabase
-      .from('courses')
-      .insert([{
-        name: newCourseName.trim(),
-        code: newCourseCode.trim().toUpperCase(),
-        department_id: newCourseDepartmentId,
-        credits: parseInt(newCourseCredits)
-      }]);
+
+    const { error } = await supabase.from('courses').insert([{
+      name: newCourseName.trim(),
+      code: newCourseCode.trim().toUpperCase(),
+      department_id: newCourseDepartmentId,
+      credits: parseInt(newCourseCredits),
+    }]);
 
     if (error) {
-      console.error('Error adding course:', error);
-      toast.error('Failed to add course.', { description: error.message });
+      toast.error('Failed to add course: ' + error.message);
     } else {
       toast.success(`Course '${newCourseName}' added successfully.`);
       setNewCourseName('');
@@ -92,24 +82,26 @@ const ManageCourses: React.FC = () => {
   };
 
   const handleDeleteCourse = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete course '${name}'?`)) return;
+    if (!confirm(`Delete course '${name}'?`)) return;
 
-    const { error } = await supabase
-      .from('courses')
-      .delete()
-      .eq('id', id);
+    // Optimistic remove
+    setCourses(prev => prev.filter(c => c.id !== id));
+    setDeletingId(id);
+
+    const { error } = await supabase.from('courses').delete().eq('id', id);
 
     if (error) {
-      console.error('Error deleting course:', error);
-      toast.error('Failed to delete course.');
+      toast.error('Failed to delete course: ' + error.message);
+      fetchCourses(); // rollback
     } else {
-      toast.info(`Course '${name}' deleted.`);
-      fetchCourses();
+      toast.success(`Course '${name}' deleted.`);
     }
+    setDeletingId(null);
   };
 
   return (
-    <MainLayout userRole="SUPER_ADMIN">
+    // FIX: removed userRole prop — MainLayout reads role from useSession internally
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Manage Courses"
@@ -118,71 +110,56 @@ const ManageCourses: React.FC = () => {
         <Card className="max-w-5xl mx-auto shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold">Academic Courses</CardTitle>
-            <CardDescription className="text-muted-foreground">Add, view, and remove courses offered by the college.</CardDescription>
+            <CardDescription>Add, view, and remove courses offered by the college.</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Add form */}
             <form onSubmit={handleAddCourse} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 border rounded-md bg-muted/50">
-              <div className="md:col-span-1">
-                <Label htmlFor="newCourseName" className="text-sm font-medium">Course Name</Label>
+              <div>
+                <Label htmlFor="newCourseName">Course Name</Label>
                 <Input
-                  id="newCourseName"
-                  type="text"
-                  placeholder="e.g., Data Structures"
-                  value={newCourseName}
-                  onChange={(e) => setNewCourseName(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  className="mt-1"
+                  id="newCourseName" type="text" placeholder="e.g., Data Structures"
+                  value={newCourseName} onChange={e => setNewCourseName(e.target.value)}
+                  required disabled={isSubmitting} className="mt-1"
                 />
               </div>
-              <div className="md:col-span-1">
-                <Label htmlFor="newCourseCode" className="text-sm font-medium">Course Code</Label>
+              <div>
+                <Label htmlFor="newCourseCode">Course Code</Label>
                 <Input
-                  id="newCourseCode"
-                  type="text"
-                  placeholder="e.g., CS201"
-                  value={newCourseCode}
-                  onChange={(e) => setNewCourseCode(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  className="mt-1"
+                  id="newCourseCode" type="text" placeholder="e.g., CS201"
+                  value={newCourseCode} onChange={e => setNewCourseCode(e.target.value)}
+                  required disabled={isSubmitting} className="mt-1"
                 />
               </div>
-              <div className="md:col-span-1">
-                <Label htmlFor="newCourseDepartment" className="text-sm font-medium">Department</Label>
-                <Select onValueChange={setNewCourseDepartmentId} value={newCourseDepartmentId} required>
-                  <SelectTrigger id="newCourseDepartment" className="mt-1">
-                    <SelectValue placeholder="Select Department" />
+              <div>
+                <Label htmlFor="newCourseDept">Department</Label>
+                <Select onValueChange={setNewCourseDepartmentId} value={newCourseDepartmentId}>
+                  <SelectTrigger id="newCourseDept" className="mt-1">
+                    <SelectValue placeholder={loadingDepts ? 'Loading...' : 'Select Department'} />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map((dept) => (
+                    {departments.map(dept => (
                       <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="md:col-span-1">
-                <Label htmlFor="newCourseCredits" className="text-sm font-medium">Credits</Label>
+              <div>
+                <Label htmlFor="newCourseCredits">Credits</Label>
                 <Input
-                  id="newCourseCredits"
-                  type="number"
-                  min="1"
-                  max="6"
-                  placeholder="e.g., 3"
-                  value={newCourseCredits}
-                  onChange={(e) => setNewCourseCredits(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  className="mt-1"
+                  id="newCourseCredits" type="number" min="1" max="6" placeholder="e.g., 3"
+                  value={newCourseCredits} onChange={e => setNewCourseCredits(e.target.value)}
+                  required disabled={isSubmitting} className="mt-1"
                 />
               </div>
               <div className="md:col-span-4">
-                <Button type="submit" className="w-full py-2 text-base font-semibold" disabled={isSubmitting}>
-                  {isSubmitting ? 'Adding...' : 'Add Course'}
+                <Button type="submit" className="w-full font-semibold" disabled={isSubmitting}>
+                  {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Adding...</> : 'Add Course'}
                 </Button>
               </div>
             </form>
 
+            {/* Table */}
             <div className="overflow-x-auto border rounded-md shadow-sm">
               <Table>
                 <TableHeader>
@@ -197,29 +174,33 @@ const ManageCourses: React.FC = () => {
                 <TableBody>
                   {loadingCourses ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground py-4">Loading courses...</TableCell>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+                      </TableCell>
                     </TableRow>
                   ) : courses.length > 0 ? (
-                    courses.map((course) => (
+                    courses.map(course => (
                       <TableRow key={course.id} className="hover:bg-muted/50">
                         <TableCell className="font-medium">{course.name}</TableCell>
                         <TableCell>{course.code}</TableCell>
-                        <TableCell>{course.departments?.name || 'Unknown'}</TableCell>
+                        <TableCell>{course.departments?.name ?? 'Unknown'}</TableCell>
                         <TableCell className="text-right">{course.credits}</TableCell>
                         <TableCell className="text-right">
                           <Button
-                            variant="destructive"
-                            size="sm"
+                            variant="destructive" size="sm"
+                            disabled={deletingId === course.id}
                             onClick={() => handleDeleteCourse(course.id, course.name)}
                           >
-                            Delete
+                            {deletingId === course.id
+                              ? <Loader2 className="h-3 w-3 animate-spin" />
+                              : 'Delete'}
                           </Button>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground py-4">
+                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                         No courses added yet.
                       </TableCell>
                     </TableRow>
