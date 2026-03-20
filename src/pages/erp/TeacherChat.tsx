@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { useCourses } from '@/hooks/useCourses';
 import { useChatMessages } from '@/hooks/useChatMessages';
-import { useSession } from '@/components/auth/SessionContextProvider';
+import { useSession } from '@/components/auth/useSession';
 import PageHeader from '@/components/layout/PageHeader';
 
 const TeacherChat: React.FC = () => {
@@ -47,7 +47,7 @@ const TeacherChat: React.FC = () => {
   };
 
   return (
-    <MainLayout userRole={userRole}>
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Class Chat"

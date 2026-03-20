@@ -20,6 +20,7 @@ import ViewAllAttendance from "./pages/erp/ViewAllAttendance";
 import ViewAllMarks from "./pages/erp/ViewAllMarks";
 import ViewMyClasses from "./pages/erp/ViewMyClasses";
 import ViewStudentProfiles from "./pages/erp/ViewStudentProfiles";
+import AdminChat from './pages/erp/AdminChat';
 import TeacherChat from "./pages/erp/TeacherChat";
 import StudentChat from "./pages/erp/StudentChat";
 import RequestOD from "./pages/erp/RequestOD";
@@ -28,7 +29,7 @@ import DashboardPage from "./components/layout/DashboardPage";
 import ProfilePage from "./pages/erp/ProfilePage";
 import EditUser from "./pages/erp/EditUser";
 import FeesRecords from "./pages/erp/FeesRecords"; // Import the new component
-import { useSession } from "./components/auth/SessionContextProvider";
+import { useSession } from "./components/auth/useSession";
 import { useEffect } from "react";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { Analytics } from "@vercel/analytics/react";
@@ -85,11 +86,12 @@ const App = () => {
             <Route path="/erp/fees/admin" element={<AdminFees />} /> {/* Existing AdminFees route */}
             <Route path="/erp/fees-records" element={<FeesRecords />} /> {/* New FeesRecords route */}
             <Route path="/erp/od/approve" element={<ApproveODRequests />} />
+            <Route path="/erp/chat/admin" element={<AdminChat />} />
             <Route path="/erp/attendance/all" element={<ViewAllAttendance />} />
             <Route path="/erp/marks/all" element={<ViewAllMarks />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['TEACHER', 'ADMIN', 'SUPER_ADMIN']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']} />}>
             <Route path="/dashboard/admin" element={<DashboardPage userRole="ADMIN" />} />
             <Route path="/profile/admin" element={<ProfilePage userRole="ADMIN" />} />
             <Route path="/erp/attendance/mark" element={<MarkAttendance />} />

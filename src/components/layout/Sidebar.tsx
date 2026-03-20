@@ -39,6 +39,7 @@ const navigationItems = {
     { name: 'Manage Departments',    href: '/erp/manage-departments',        icon: Building2 },
     { name: 'Manage Courses',        href: '/erp/manage-courses',            icon: BookOpen },
     { name: 'Fees Records',          href: '/erp/fees-records',              icon: DollarSign },
+    { name: 'Class Chat',            href: '/erp/chat/admin',               icon: MessageSquareText },
     { name: 'Approve OD Requests',   href: '/erp/od/approve',                icon: CalendarCheck },
   ],
   ADMIN: [
@@ -50,6 +51,7 @@ const navigationItems = {
     { name: 'View All Attendance',   href: '/erp/attendance/all',            icon: CalendarCheck },
     { name: 'View All Marks',        href: '/erp/marks/all',                 icon: FileText },
     { name: 'Update Fee Status',     href: '/erp/fees/admin',                icon: DollarSign },
+    { name: 'Class Chat',            href: '/erp/chat/admin',               icon: MessageSquareText },
     { name: 'Approve OD Requests',   href: '/erp/od/approve',                icon: CalendarCheck },
   ],
   TEACHER: [
