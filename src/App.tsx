@@ -89,7 +89,7 @@ const App = () => {
             <Route path="/erp/marks/all" element={<ViewAllMarks />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['TEACHER', 'ADMIN', 'SUPER_ADMIN']} />}>
             <Route path="/dashboard/admin" element={<DashboardPage userRole="ADMIN" />} />
             <Route path="/profile/admin" element={<ProfilePage userRole="ADMIN" />} />
             <Route path="/erp/attendance/mark" element={<MarkAttendance />} />
