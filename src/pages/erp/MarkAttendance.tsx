@@ -121,7 +121,7 @@ const MarkAttendance: React.FC = () => {
 
     const { error } = await supabase
       .from('attendance')
-      .upsert(attendanceRecords, { onConflict: 'student_id, course_id, date' });
+      .upsert(attendanceRecords, { onConflict: 'student_id,course_id,date' });
 
     if (error) {
       console.error('Error submitting attendance:', error);
@@ -135,7 +135,7 @@ const MarkAttendance: React.FC = () => {
   };
 
   return (
-    <MainLayout userRole="TEACHER">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Mark Attendance"
@@ -194,9 +194,9 @@ const MarkAttendance: React.FC = () => {
                       <SelectValue placeholder="Select Year" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1st Year</SelectItem>
-                      <SelectItem value="2">2nd Year</SelectItem>
-                      <SelectItem value="3">3rd Year</SelectItem>
+                      <SelectItem value="1st Year">1st Year</SelectItem>
+                      <SelectItem value="2nd Year">2nd Year</SelectItem>
+                      <SelectItem value="3rd Year">3rd Year</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
