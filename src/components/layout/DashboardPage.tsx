@@ -158,7 +158,7 @@ function LiveStatCard({
 // ─── Dashboard config (static sections only) ──────────────────────────────────
 
 const dashboardConfig = {
-  SUPER_ADMIN: {
+  ADMIN: {
     title: 'Admin Dashboard',
     sections: [
       {
@@ -166,7 +166,7 @@ const dashboardConfig = {
         description: 'Manage all user accounts and roles within the ERP system.',
         type: 'links',
         items: [
-          { name: 'My Profile', href: '/profile/super-admin', icon: User },
+          { name: 'My Profile', href: '/profile/admin', icon: User },
           { name: 'Add New Teacher', href: '/erp/add-teacher', icon: BookUser },
           { name: 'Add New Student', href: '/erp/add-student', icon: GraduationCap },
           { name: 'View & Manage All Users', href: '/erp/manage-users', icon: Users, variant: 'outline' },
@@ -181,38 +181,6 @@ const dashboardConfig = {
           { name: 'Manage Courses', href: '/erp/manage-courses', icon: BookOpen },
           { name: 'Manage All Fees', href: '/erp/fees-records', icon: DollarSign, variant: 'outline' },
           { name: 'Approve OD Requests', href: '/erp/od/approve', icon: CalendarCheck, variant: 'outline' },
-        ],
-      },
-    ],
-  },
-  ADMIN: {
-    title: 'Admin Dashboard',
-    sections: [
-      {
-        title: 'Personal',
-        description: 'View and manage your personal profile.',
-        type: 'links',
-        items: [{ name: 'My Profile', href: '/profile/admin', icon: User }],
-      },
-      {
-        title: 'Administrative Tasks',
-        description: '',
-        type: 'links',
-        items: [
-          { name: 'Add Teacher', href: '/erp/add-teacher' },
-          { name: 'Add Student', href: '/erp/add-student' },
-          { name: 'Mark Attendance (Admin override)', href: '/erp/attendance/mark', variant: 'outline' },
-          { name: 'Update Fee Status', href: '/erp/fees/admin', variant: 'outline' },
-        ],
-      },
-      {
-        title: 'Overview & Approvals',
-        description: '',
-        type: 'links',
-        items: [
-          { name: 'View All Attendance', href: '/erp/attendance/all' },
-          { name: 'View All Marks', href: '/erp/marks/all' },
-          { name: 'Approve OD Requests', href: '/erp/od/approve', variant: 'outline' },
         ],
       },
     ],
