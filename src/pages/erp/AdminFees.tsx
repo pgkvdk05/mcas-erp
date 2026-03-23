@@ -12,13 +12,13 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import PageHeader from '@/components/layout/PageHeader';
+import { Loader2 } from 'lucide-react';
 
 interface FeeRecord {
   id: string;
   student_id: string;
   fee_type: string;
   amount: number;
-  original_amount: number;
   due_date: string;
   status: 'Paid' | 'Outstanding';
   paid_at: string | null;
@@ -37,54 +37,26 @@ const AdminFees: React.FC = () => {
   const [paymentAmount, setPaymentAmount] = useState<number | ''>('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchFees();
-  }, [filterStatus]);
+  useEffect(() => { fetchFees(); }, [filterStatus]);
 
   const fetchFees = async () => {
     setLoading(true);
-    try {
-      let query = supabase
-        .from('fees')
-        .select(`
-          id,
-          student_id,
-          fee_type,
-          amount,
-          due_date,
-          status,
-          paid_at,
-          profiles (
-            first_name,
-            last_name,
-            roll_number
-          )
-        `)
-        .order('due_date', { ascending: true });
+    let query = supabase
+      .from('fees')
+      .select(`id, student_id, fee_type, amount, due_date, status, paid_at,
+        profiles (first_name, last_name, roll_number)`)
+      .order('due_date', { ascending: true });
 
-      if (filterStatus !== 'all') {
-        query = query.eq('status', filterStatus);
-      }
+    if (filterStatus !== 'all') query = query.eq('status', filterStatus);
 
-      const { data, error } = await query;
-
-      if (error) {
-        throw error;
-      }
-
-      const formattedData = data.map((fee: any) => ({
-        ...fee,
-        original_amount: fee.amount,
-        profiles: fee.profiles as { first_name: string; last_name: string; roll_number: string; } | null,
-      }));
-      setFees(formattedData as FeeRecord[]);
-    } catch (error: any) {
-      console.error('Error fetching fees:', error);
-      toast.error('Failed to load fee records.', { description: error.message });
+    const { data, error } = await query;
+    if (error) {
+      toast.error('Failed to load fee records: ' + error.message);
       setFees([]);
-    } finally {
-      setLoading(false);
+    } else {
+      setFees((data ?? []) as unknown as FeeRecord[]);
     }
+    setLoading(false);
   };
 
   const handleMarkAsPaidClick = (feeId: string, currentAmount: number) => {
@@ -92,85 +64,60 @@ const AdminFees: React.FC = () => {
     setPaymentAmount(currentAmount);
   };
 
-  const handleConfirmPayment = async (feeId: string, originalOutstandingAmount: number) => {
-    if (paymentAmount === '' || paymentAmount <= 0) {
-      toast.error('Please enter a valid payment amount.');
-      return;
-    }
-    if (paymentAmount > originalOutstandingAmount) {
-      toast.error('Payment amount cannot exceed the outstanding amount.');
-      return;
-    }
+  const handleConfirmPayment = async (feeId: string, outstanding: number) => {
+    if (paymentAmount === '' || paymentAmount <= 0) { toast.error('Enter a valid amount.'); return; }
+    if (paymentAmount > outstanding) { toast.error('Amount exceeds outstanding balance.'); return; }
 
     setSubmitting(true);
-    try {
-      const newOutstandingAmount = originalOutstandingAmount - paymentAmount;
-      const newStatus = newOutstandingAmount <= 0 ? 'Paid' : 'Outstanding';
-      const paidAt = newStatus === 'Paid' ? new Date().toISOString() : null;
+    const newAmount = outstanding - paymentAmount;
+    const newStatus = newAmount <= 0 ? 'Paid' : 'Outstanding';
 
-      const { error } = await supabase
-        .from('fees')
-        .update({
-          amount: newOutstandingAmount,
-          status: newStatus,
-          paid_at: paidAt,
-        })
-        .eq('id', feeId);
+    const { error } = await supabase.from('fees').update({
+      amount: newAmount,
+      status: newStatus,
+      paid_at: newStatus === 'Paid' ? new Date().toISOString() : null,
+    }).eq('id', feeId);
 
-      if (error) {
-        throw error;
-      }
-
-      toast.success(`Payment of ₹${paymentAmount.toLocaleString()} recorded for fee.`);
+    if (error) {
+      toast.error('Failed: ' + error.message);
+    } else {
+      toast.success(`₹${(paymentAmount as number).toLocaleString()} payment recorded.`);
       fetchFees();
       setEditingFeeId(null);
       setPaymentAmount('');
-    } catch (error: any) {
-      console.error('Error recording payment:', error);
-      toast.error('Failed to record payment.', { description: error.message });
-    } finally {
-      setSubmitting(false);
     }
-  };
-
-  const handleCancelPayment = () => {
-    setEditingFeeId(null);
-    setPaymentAmount('');
+    setSubmitting(false);
   };
 
   return (
-    <MainLayout userRole="ADMIN">
+    <MainLayout>
       <div className="space-y-6">
-        <PageHeader
-          title="Manage Student Fees"
-          description="View and manage fee status for all students."
-        />
+        <PageHeader title="Manage Student Fees" description="View and update fee status for all students." />
         <Card className="max-w-5xl mx-auto">
           <CardHeader>
-            <CardTitle>All Student Fee Records</CardTitle>
-            <CardDescription>View and manage fee status for all students.</CardDescription>
+            <CardTitle>Student Fee Records</CardTitle>
+            <CardDescription>Mark payments and track outstanding fees.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-4 flex items-center space-x-4">
-              <Label htmlFor="filterStatus">Filter by Status</Label>
-              <Select onValueChange={setFilterStatus} value={filterStatus} disabled={submitting}>
-                <SelectTrigger id="filterStatus" className="w-[180px]">
-                  <SelectValue placeholder="All Statuses" />
+            <div className="mb-4 flex items-center gap-3">
+              <Label>Filter</Label>
+              <Select onValueChange={setFilterStatus} value={filterStatus}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="Paid">Paid</SelectItem>
                   <SelectItem value="Outstanding">Outstanding</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
             <div className="overflow-x-auto border rounded-md">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Student Name</TableHead>
-                    <TableHead>Roll Number</TableHead>
+                  <TableRow className="bg-muted/20">
+                    <TableHead>Student</TableHead>
+                    <TableHead>Roll No.</TableHead>
                     <TableHead>Fee Type</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead>Due Date</TableHead>
@@ -180,65 +127,50 @@ const AdminFees: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground">
-                        Loading fee records...
+                    <TableRow><TableCell colSpan={7} className="text-center py-8">
+                      <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+                    </TableCell></TableRow>
+                  ) : fees.length === 0 ? (
+                    <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">
+                      No fee records found.
+                    </TableCell></TableRow>
+                  ) : fees.map(fee => (
+                    <TableRow key={fee.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">{fee.profiles?.first_name} {fee.profiles?.last_name}</TableCell>
+                      <TableCell className="font-mono text-sm">{fee.profiles?.roll_number ?? '—'}</TableCell>
+                      <TableCell>{fee.fee_type}</TableCell>
+                      <TableCell className="text-right">₹{fee.amount.toLocaleString()}</TableCell>
+                      <TableCell>{fee.due_date}</TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant={fee.status === 'Paid' ? 'default' : 'destructive'}>{fee.status}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {fee.status === 'Outstanding' && editingFeeId !== fee.id && (
+                          <Button size="sm" onClick={() => handleMarkAsPaidClick(fee.id, fee.amount)} disabled={submitting}>
+                            Mark Paid
+                          </Button>
+                        )}
+                        {editingFeeId === fee.id && (
+                          <div className="flex items-center gap-1">
+                            <Input type="number" value={paymentAmount}
+                              onChange={e => setPaymentAmount(parseFloat(e.target.value) || '')}
+                              className="w-24 h-7" min="1" max={fee.amount} disabled={submitting} />
+                            <Button size="sm" className="h-7" onClick={() => handleConfirmPayment(fee.id, fee.amount)} disabled={submitting}>
+                              {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Confirm'}
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7" onClick={() => { setEditingFeeId(null); setPaymentAmount(''); }}>
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
+                        {fee.status === 'Paid' && (
+                          <span className="text-xs text-muted-foreground">
+                            {fee.paid_at ? new Date(fee.paid_at).toLocaleDateString() : 'Paid'}
+                          </span>
+                        )}
                       </TableCell>
                     </TableRow>
-                  ) : fees.length > 0 ? (
-                    fees.map((fee) => (
-                      <TableRow key={fee.id}>
-                        <TableCell className="font-medium">{fee.profiles?.first_name} {fee.profiles?.last_name}</TableCell>
-                        <TableCell>{fee.profiles?.roll_number}</TableCell>
-                        <TableCell>{fee.fee_type}</TableCell>
-                        <TableCell className="text-right">₹{fee.amount.toLocaleString()}</TableCell>
-                        <TableCell>{fee.due_date}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant={fee.status === 'Paid' ? 'default' : 'destructive'}>
-                            {fee.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {fee.status === 'Outstanding' && editingFeeId !== fee.id && (
-                            <Button size="sm" onClick={() => handleMarkAsPaidClick(fee.id, fee.amount)} disabled={submitting}>
-                              Mark as Paid
-                            </Button>
-                          )}
-                          {editingFeeId === fee.id && (
-                            <div className="flex items-center space-x-2">
-                              <Input
-                                type="number"
-                                value={paymentAmount}
-                                onChange={(e) => setPaymentAmount(parseFloat(e.target.value) || '')}
-                                placeholder="Amount"
-                                className="w-24"
-                                min="1"
-                                max={fee.amount}
-                                disabled={submitting}
-                              />
-                              <Button size="sm" onClick={() => handleConfirmPayment(fee.id, fee.amount)} disabled={submitting}>
-                                Confirm
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={handleCancelPayment} disabled={submitting}>
-                                Cancel
-                              </Button>
-                            </div>
-                          )}
-                          {fee.status === 'Paid' && (
-                            <Button size="sm" variant="outline" disabled>
-                              Paid
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground">
-                        No fee records found for the selected filter.
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </div>

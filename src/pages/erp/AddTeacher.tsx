@@ -13,7 +13,7 @@ import { useDepartments } from '@/hooks/useDepartments';
 import PageHeader from '@/components/layout/PageHeader';
 
 const AddTeacher: React.FC = () => {
-  const { departments, loading: loadingDepts } = useDepartments();
+  const { departments } = useDepartments();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',

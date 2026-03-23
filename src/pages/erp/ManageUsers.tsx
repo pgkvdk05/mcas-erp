@@ -70,7 +70,7 @@ const ManageUsers: React.FC = () => {
       toast.error('Failed to load users.', { description: error.message });
       setUsers([]);
     } else {
-      setUsers(data as UserProfile[]);
+      setUsers(data as unknown as UserProfile[]);
     }
     setLoading(false);
   };
@@ -102,14 +102,14 @@ const ManageUsers: React.FC = () => {
 
   if (sessionLoading) {
     return (
-      <MainLayout userRole={contextUserRole}>
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading user session...</div>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout userRole={contextUserRole}>
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Manage Users"
