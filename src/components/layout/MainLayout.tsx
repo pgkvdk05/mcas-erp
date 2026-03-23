@@ -26,6 +26,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     } else {
       showSuccess('Logged out successfully.');
       navigate('/');
+      window.location.href = '/';
     }
   };
 
