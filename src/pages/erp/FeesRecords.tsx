@@ -226,8 +226,8 @@ const FeesRecords: React.FC = () => {
     .reduce((sum, f) => sum + f.amount, 0);
 
   const totalPaid = filtered
-    .filter((f: FeeRecord) => f.status === 'Paid')
-    .reduce((sum, f) => sum + DEFAULT_FEE, 0);
+    .filter((_f: FeeRecord) => _f.status === 'Paid')
+    .reduce((sum, _f) => sum + DEFAULT_FEE, 0);
 
   return (
     <MainLayout>

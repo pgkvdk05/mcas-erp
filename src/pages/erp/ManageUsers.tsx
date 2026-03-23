@@ -30,7 +30,7 @@ interface UserProfile {
 }
 
 const ManageUsers: React.FC = () => {
-  const { userRole: contextUserRole, loading: sessionLoading } = useSession();
+  const { userRole: _contextUserRole, loading: sessionLoading } = useSession();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
