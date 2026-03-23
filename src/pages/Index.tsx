@@ -5,17 +5,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import MainLayout from '@/components/layout/MainLayout';
-import { Crown, ShieldCheck, BookUser, GraduationCap } from 'lucide-react';
+import { ShieldCheck, BookUser, GraduationCap } from 'lucide-react';
 
 const roleCards = [
-  {
-    role: 'SUPER_ADMIN',
-    title: 'Super Admin',
-    description: 'Full control over the entire system.',
-    icon: Crown,
-    path: '/auth/super-admin',
-  },
-  {
+{
     role: 'ADMIN',
     title: 'Admin',
     description: 'Manage academic and administrative tasks.',
@@ -51,7 +44,7 @@ const Index: React.FC = () => {
           Please select your role to proceed to the ERP system.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
           {roleCards.map((card, index) => {
             const Icon = card.icon;
             return (
