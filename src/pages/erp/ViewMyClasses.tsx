@@ -98,14 +98,14 @@ const ViewMyClasses: React.FC = () => {
 
   if (sessionLoading || loadingClasses) {
     return (
-      <MainLayout userRole="TEACHER">
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading classes...</div>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout userRole="TEACHER">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="My Classes"

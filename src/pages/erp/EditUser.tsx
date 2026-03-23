@@ -153,7 +153,7 @@ const EditUser: React.FC = () => {
 
   if (loading) {
     return (
-      <MainLayout userRole="SUPER_ADMIN">
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading user profile...</div>
       </MainLayout>
     );
@@ -161,14 +161,14 @@ const EditUser: React.FC = () => {
 
   if (!formData) {
     return (
-      <MainLayout userRole="SUPER_ADMIN">
+      <MainLayout>
         <div className="text-center text-destructive">User profile not found.</div>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout userRole="SUPER_ADMIN">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title={`Edit User: ${formData.first_name} ${formData.last_name}`}

@@ -90,14 +90,14 @@ const RequestOD: React.FC = () => {
 
   if (sessionLoading) {
     return (
-      <MainLayout userRole="STUDENT">
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading session...</div>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout userRole="STUDENT">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Request On Duty (OD)"

@@ -99,7 +99,7 @@ const ViewAllAttendance: React.FC = () => {
   };
 
   return (
-    <MainLayout userRole="ADMIN">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Attendance Logs"

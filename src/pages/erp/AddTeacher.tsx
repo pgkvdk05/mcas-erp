@@ -110,7 +110,7 @@ const AddTeacher: React.FC = () => {
   };
 
   return (
-    <MainLayout userRole="SUPER_ADMIN">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="Add New Teacher"

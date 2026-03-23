@@ -67,14 +67,14 @@ const StudentFees: React.FC = () => {
 
   if (sessionLoading || loadingFees) {
     return (
-      <MainLayout userRole="STUDENT">
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading fees...</div>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout userRole="STUDENT">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="My Fees"

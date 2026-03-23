@@ -83,7 +83,7 @@ const ViewAttendance: React.FC = () => {
   const attendancePercentage = totalDays > 0 ? ((presentDays / totalDays) * 100).toFixed(1) : 0;
 
   return (
-    <MainLayout userRole="STUDENT">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="My Attendance"

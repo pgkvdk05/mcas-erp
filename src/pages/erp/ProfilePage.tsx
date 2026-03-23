@@ -90,7 +90,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
 
   if (sessionLoading || loadingProfile) {
     return (
-      <MainLayout userRole={userRole}>
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading profile...</div>
       </MainLayout>
     );
@@ -98,7 +98,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
 
   if (!user || !profileData) {
     return (
-      <MainLayout userRole={userRole}>
+      <MainLayout>
         <div className="text-center text-destructive">
           No profile data found. Please ensure you are logged in and your profile exists.
         </div>
@@ -107,7 +107,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
   }
 
   return (
-    <MainLayout userRole={userRole}>
+    <MainLayout>
       <div className="space-y-6">
         <h2 className="text-3xl font-bold text-primary">My Profile</h2>
         <Card className="max-w-3xl mx-auto shadow-lg rounded-lg">

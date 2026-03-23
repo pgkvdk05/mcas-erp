@@ -87,14 +87,14 @@ const ViewMarks: React.FC = () => {
 
   if (sessionLoading || loadingMarks) {
     return (
-      <MainLayout userRole="STUDENT">
+      <MainLayout>
         <div className="text-center text-muted-foreground">Loading marks...</div>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout userRole="STUDENT">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="My Marks"

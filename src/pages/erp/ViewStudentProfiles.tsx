@@ -84,7 +84,7 @@ const ViewStudentProfiles: React.FC = () => {
   };
 
   return (
-    <MainLayout userRole="TEACHER">
+    <MainLayout>
       <div className="space-y-6">
         <PageHeader
           title="View Student Profiles"
