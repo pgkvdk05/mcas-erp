@@ -52,7 +52,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 
-        if (currentSession?.user) {
+        if (currentSession?.user?.id) {
           const role = await fetchRole(currentSession.user.id);
           if (!mounted) return;
           setUserRole(role);
