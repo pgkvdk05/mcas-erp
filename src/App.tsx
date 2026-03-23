@@ -68,15 +68,14 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Index />} />
-          <Route path="/auth/super-admin" element={<AuthPage role="SUPER_ADMIN" />} />
           <Route path="/auth/admin" element={<AuthPage role="ADMIN" />} />
           <Route path="/auth/teacher" element={<AuthPage role="TEACHER" />} />
           <Route path="/auth/student" element={<AuthPage role="STUDENT" />} />
 
           {/* Protected Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
-            <Route path="/dashboard/super-admin" element={<DashboardPage userRole="SUPER_ADMIN" />} />
-            <Route path="/profile/super-admin" element={<ProfilePage userRole="SUPER_ADMIN" />} />
+          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+            <Route path="/dashboard/admin" element={<DashboardPage userRole="ADMIN" />} />
+            
             <Route path="/erp/add-teacher" element={<AddTeacher />} />
             <Route path="/erp/add-student" element={<AddStudent />} />
             <Route path="/erp/manage-users" element={<ManageUsers />} />

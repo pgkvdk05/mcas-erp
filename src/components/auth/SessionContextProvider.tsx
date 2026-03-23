@@ -61,7 +61,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
           if (event === 'SIGNED_IN') {
             showSuccess('Logged in successfully!');
             const path = role
-              ? `/dashboard/${role.toLowerCase().replace('_', '-')}`
+              ? role === "SUPER_ADMIN" ? "/dashboard/admin" : `/dashboard/${role.toLowerCase().replace("_", "-")}`
               : '/dashboard/student';
             navigateRef.current(path);
           }

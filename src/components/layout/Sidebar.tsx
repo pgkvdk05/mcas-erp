@@ -30,19 +30,6 @@ interface SidebarProps {
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
 const navigationItems = {
-  SUPER_ADMIN: [
-    { name: 'Dashboard',             href: '/dashboard/super-admin',        icon: LayoutDashboard },
-    { name: 'My Profile',            href: '/profile/super-admin',           icon: User },
-    { name: 'Manage Users',          href: '/erp/manage-users',              icon: Users },
-    { name: 'Add Teacher',           href: '/erp/add-teacher',               icon: BookUser },
-    { name: 'Add Student',           href: '/erp/add-student',               icon: GraduationCap },
-    { name: 'Manage Departments',    href: '/erp/manage-departments',        icon: Building2 },
-    { name: 'Manage Courses',        href: '/erp/manage-courses',            icon: BookOpen },
-    { name: 'Fees Records',          href: '/erp/fees-records',              icon: DollarSign },
-    { name: 'Class Chat',            href: '/erp/chat/admin',               icon: MessageSquareText },
-    { name: 'Class Chat',            href: '/erp/chat/admin',               icon: MessageSquareText },
-    { name: 'Approve OD Requests',   href: '/erp/od/approve',                icon: CalendarCheck },
-  ],
   ADMIN: [
     { name: 'Dashboard',             href: '/dashboard/admin',               icon: LayoutDashboard },
     { name: 'My Profile',            href: '/profile/admin',                 icon: User },

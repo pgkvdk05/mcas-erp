@@ -159,7 +159,7 @@ function LiveStatCard({
 
 const dashboardConfig = {
   SUPER_ADMIN: {
-    title: 'Super Admin Dashboard',
+    title: 'Admin Dashboard',
     sections: [
       {
         title: 'User Management',
@@ -342,7 +342,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole: propUserRole })
         <h2 className="text-4xl font-bold text-primary mb-6">{config.title}</h2>
 
         {/* ── Live Quick Stats (SUPER_ADMIN only) ───────────────────────── */}
-        {currentRole === 'SUPER_ADMIN' && (
+        {(currentRole === 'ADMIN' || currentRole === 'SUPER_ADMIN') && (
           <Card className="shadow-lg rounded-lg">
             <CardHeader>
               <div className="flex items-center justify-between">

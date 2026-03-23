@@ -24,7 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   }
 
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
-    const redirectPath = userRole ? `/dashboard/${userRole.toLowerCase().replace('_', '-')}` : '/';
+    const redirectPath = userRole ? userRole === "SUPER_ADMIN" ? "/dashboard/admin" : `/dashboard/${userRole.toLowerCase().replace("_", "-")}` : '/';
     return <Navigate to={redirectPath} replace />;
   }
 
