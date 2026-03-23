@@ -40,7 +40,6 @@ const navigationItems = {
     { name: 'View All Marks',        href: '/erp/marks/all',                 icon: FileText },
     { name: 'Update Fee Status',     href: '/erp/fees/admin',                icon: DollarSign },
     { name: 'Class Chat',            href: '/erp/chat/admin',               icon: MessageSquareText },
-    { name: 'Class Chat',            href: '/erp/chat/admin',               icon: MessageSquareText },
     { name: 'Approve OD Requests',   href: '/erp/od/approve',                icon: CalendarCheck },
   ],
   TEACHER: [
