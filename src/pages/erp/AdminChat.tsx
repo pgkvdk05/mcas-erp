@@ -48,10 +48,10 @@ const AdminChat: React.FC = () => {
           </CardHeader>
           <CardContent className="flex-grow flex flex-col p-4 pt-0">
             <div className="mb-4 p-3 border rounded-md bg-muted/50">
-              <Label htmlFor="course-select">Select Course</Label>
+              <Label htmlFor="subject-select">Select Subject</Label>
               <Select onValueChange={setSelectedCourseId} value={selectedCourseId || ''} disabled={loadingCourses}>
-                <SelectTrigger id="course-select" className="mt-1">
-                  <SelectValue placeholder="Select a course to view chat" />
+                <SelectTrigger id="subject-select" className="mt-1">
+                  <SelectValue placeholder="Select a subject to view chat" />
                 </SelectTrigger>
                 <SelectContent>
                   {loadingCourses ? <SelectItem value="loading" disabled>Loading...</SelectItem>
@@ -63,7 +63,7 @@ const AdminChat: React.FC = () => {
             </div>
             <ScrollArea className="flex-grow pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
               <div className="space-y-4">
-                {!selectedCourseId ? <div className="text-center text-muted-foreground py-4">Select a course to view messages.</div>
+                {!selectedCourseId ? <div className="text-center text-muted-foreground py-4">Select a subject to view messages.</div>
                   : loadingMessages ? <div className="text-center text-muted-foreground py-4">Loading messages...</div>
                   : messages.length === 0 ? <div className="text-center text-muted-foreground py-4">No messages yet.</div>
                   : messages.map(msg => (
@@ -91,7 +91,7 @@ const AdminChat: React.FC = () => {
               </div>
             </ScrollArea>
             <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input placeholder={selectedCourseId ? 'Type your message...' : 'Select a course first'} value={newMessageText} onChange={e => setNewMessageText(e.target.value)} className="flex-grow h-10" disabled={!selectedCourseId || sending} />
+              <Input placeholder={selectedCourseId ? 'Type your message...' : 'Select a subject first'} value={newMessageText} onChange={e => setNewMessageText(e.target.value)} className="flex-grow h-10" disabled={!selectedCourseId || sending} />
               <Button type="submit" size="icon" disabled={!selectedCourseId || sending || !newMessageText.trim()}><Send className="h-4 w-4" /></Button>
             </form>
           </CardContent>

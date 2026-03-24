@@ -178,7 +178,7 @@ const dashboardConfig = {
         type: 'links',
         items: [
           { name: 'Manage Departments', href: '/erp/manage-departments', icon: Building2 },
-          { name: 'Manage Courses', href: '/erp/manage-courses', icon: BookOpen },
+          { name: 'Manage Subjects', href: '/erp/manage-courses', icon: BookOpen },
           { name: 'Manage All Fees', href: '/erp/fees-records', icon: DollarSign, variant: 'outline' },
           { name: 'Approve OD Requests', href: '/erp/od/approve', icon: CalendarCheck, variant: 'outline' },
         ],
@@ -287,7 +287,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ userRole: propUserRole })
       urgent: false,
     },
     {
-      title: 'Total Courses',
+      title: 'Total Subjects',
       value: stats?.totalCourses.toLocaleString() ?? '—',
       trend: stats ? `+${stats.newCoursesSemester} new this semester` : '',
       icon: BookOpen,

@@ -104,19 +104,19 @@ const ManageCourses: React.FC = () => {
     <MainLayout>
       <div className="space-y-6">
         <PageHeader
-          title="Manage Courses"
+          title="Manage Subjects"
           description="Add, view, and remove courses offered by the college."
         />
         <Card className="max-w-5xl mx-auto shadow-lg rounded-lg">
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold">Academic Courses</CardTitle>
+            <CardTitle className="text-2xl font-semibold">Academic Subjects</CardTitle>
             <CardDescription>Add, view, and remove courses offered by the college.</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Add form */}
             <form onSubmit={handleAddCourse} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 border rounded-md bg-muted/50">
               <div>
-                <Label htmlFor="newCourseName">Course Name</Label>
+                <Label htmlFor="newCourseName">Subject Name</Label>
                 <Input
                   id="newCourseName" type="text" placeholder="e.g., Data Structures"
                   value={newCourseName} onChange={e => setNewCourseName(e.target.value)}
@@ -124,7 +124,7 @@ const ManageCourses: React.FC = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="newCourseCode">Course Code</Label>
+                <Label htmlFor="newCourseCode">Subject Code</Label>
                 <Input
                   id="newCourseCode" type="text" placeholder="e.g., CS201"
                   value={newCourseCode} onChange={e => setNewCourseCode(e.target.value)}
@@ -164,7 +164,7 @@ const ManageCourses: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/20">
-                    <TableHead className="font-semibold">Course Name</TableHead>
+                    <TableHead className="font-semibold">Subject Name</TableHead>
                     <TableHead className="font-semibold">Code</TableHead>
                     <TableHead className="font-semibold">Department</TableHead>
                     <TableHead className="text-right font-semibold">Credits</TableHead>

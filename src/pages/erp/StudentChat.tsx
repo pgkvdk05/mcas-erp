@@ -60,10 +60,10 @@ const StudentChat: React.FC = () => {
           </CardHeader>
           <CardContent className="flex-grow flex flex-col p-4 pt-0">
             <div className="mb-4 p-3 border rounded-md bg-muted/50">
-              <Label htmlFor="course-select" className="text-sm font-medium">Select Course</Label>
+              <Label htmlFor="subject-select" className="text-sm font-medium">Select Subject</Label>
               <Select onValueChange={setSelectedCourseId} value={selectedCourseId || ''} disabled={loadingCourses}>
-                <SelectTrigger id="course-select" className="mt-1">
-                  <SelectValue placeholder="Select a Course to chat in" />
+                <SelectTrigger id="subject-select" className="mt-1">
+                  <SelectValue placeholder="Select a Subject to chat in" />
                 </SelectTrigger>
                 <SelectContent>
                   {loadingCourses ? (

@@ -122,8 +122,8 @@ const ViewMyClasses: React.FC = () => {
                 <TableHeader>
                   <TableRow className="bg-muted/20">
                     <TableHead className="font-semibold">Department</TableHead>
-                    <TableHead className="font-semibold">Course Name</TableHead>
-                    <TableHead className="font-semibold">Course Code</TableHead>
+                    <TableHead className="font-semibold">Subject Name</TableHead>
+                    <TableHead className="font-semibold">Subject Code</TableHead>
                     <TableHead className="text-right font-semibold">Credits</TableHead>
                   </TableRow>
                 </TableHeader>

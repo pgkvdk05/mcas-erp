@@ -204,7 +204,7 @@ const MarkAttendance: React.FC = () => {
                   <Label htmlFor="course" className="text-sm font-medium">Course</Label>
                   <Select onValueChange={setSelectedCourseId} value={selectedCourseId} required disabled={!selectedDepartmentId}>
                     <SelectTrigger id="course" className="mt-1">
-                      <SelectValue placeholder={!selectedDepartmentId ? "Select Dept First" : "Select Course"} />
+                      <SelectValue placeholder={!selectedDepartmentId ? "Select Dept First" : "Select Subject"} />
                     </SelectTrigger>
                     <SelectContent>
                       {courses.map((course) => (

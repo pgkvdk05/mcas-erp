@@ -221,7 +221,7 @@ const UploadMarks: React.FC = () => {
                   <Label htmlFor="course">Course</Label>
                   <Select onValueChange={setSelectedCourseId} value={selectedCourseId} disabled={!selectedDepartmentId || loadingCourses}>
                     <SelectTrigger id="course" className="mt-1">
-                      <SelectValue placeholder={!selectedDepartmentId ? 'Select Dept First' : loadingCourses ? 'Loading...' : 'Select Course'} />
+                      <SelectValue placeholder={!selectedDepartmentId ? 'Select Dept First' : loadingCourses ? 'Loading...' : 'Select Subject'} />
                     </SelectTrigger>
                     <SelectContent>
                       {courses.map(course => (
