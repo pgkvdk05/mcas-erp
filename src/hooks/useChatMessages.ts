@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useSession } from '@/components/auth/SessionContextProvider';
+import { useSession } from '@/components/auth/useSession';
 
 export interface ChatMessage {
   id: string;
