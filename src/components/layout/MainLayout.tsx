@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useSession } from '@/components/auth/useSession';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +11,6 @@ import { LogOut, Menu, X } from 'lucide-react';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, userRole, loading } = useSession();
-  const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -23,10 +22,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (error) {
       console.error('Error signing out:', error);
       showError('Logout failed. Please try again.');
-    } else {
-      showSuccess('Logged out successfully.');
-      navigate('/');
-      window.location.href = '/';
     }
   };
 
