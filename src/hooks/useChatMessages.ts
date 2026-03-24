@@ -15,34 +15,23 @@ export interface ChatMessage {
   } | null;
 }
 
-export const useChatMessages = (courseId: string | null) => {
-  const { user, loading: sessionLoading } = useSession();
+export const useChatMessages = (departmentId: string | null) => {
+  const { user } = useSession();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
   const fetchMessages = useCallback(async () => {
-    if (!courseId) {
+    if (!departmentId) {
       setMessages([]);
       setLoading(false);
       return;
     }
-
     setLoading(true);
     const { data, error } = await supabase
       .from('chats')
-      .select(`
-        id,
-        sender_id,
-        message_text,
-        created_at,
-        profiles (
-          first_name,
-          last_name,
-          username
-        )
-      `)
-      .eq('course_id', courseId)
+      .select(`id, sender_id, message_text, created_at, profiles (first_name, last_name, username)`)
+      .eq('department_id', departmentId)
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -50,78 +39,44 @@ export const useChatMessages = (courseId: string | null) => {
       toast.error('Failed to load chat messages.');
       setMessages([]);
     } else {
-      const formattedMessages: ChatMessage[] = data.map((msg: any) => ({
+      setMessages((data ?? []).map((msg: any) => ({
         ...msg,
-        profiles: msg.profiles as { first_name: string; last_name: string; username: string; } | null,
-      }));
-      setMessages(formattedMessages);
+        profiles: msg.profiles as { first_name: string; last_name: string; username: string } | null,
+      })));
     }
     setLoading(false);
-  }, [courseId]);
+  }, [departmentId]);
 
   useEffect(() => {
     fetchMessages();
-
-    if (courseId) {
+    if (departmentId) {
       const channel = supabase
-        .channel(`chat_room_${courseId}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'chats',
-            filter: `course_id=eq.${courseId}`,
-          },
+        .channel(`dept_chat_${departmentId}`)
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'chats', filter: `department_id=eq.${departmentId}` },
           (payload) => {
-            supabase
-              .from('profiles')
-              .select('first_name, last_name, username')
-              .eq('id', payload.new.sender_id)
-              .single()
-              .then(({ data: profileData, error: profileError }) => {
-                if (profileError) {
-                  console.error('Error fetching profile for new chat message:', profileError);
-                  setMessages((prev) => [
-                    ...prev,
-                    { ...payload.new, profiles: null } as ChatMessage,
-                  ]);
-                } else {
-                  setMessages((prev) => [
-                    ...prev,
-                    { ...payload.new, profiles: profileData } as ChatMessage,
-                  ]);
-                }
+            supabase.from('profiles').select('first_name, last_name, username')
+              .eq('id', payload.new.sender_id).single()
+              .then(({ data: profileData }) => {
+                setMessages(prev => [...prev, { ...payload.new, profiles: profileData ?? null } as ChatMessage]);
               });
           }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
+        ).subscribe();
+      return () => { supabase.removeChannel(channel); };
     }
-  }, [courseId, fetchMessages]);
+  }, [departmentId, fetchMessages]);
 
-  const sendMessage = useCallback(async (text: string) => {
-    if (!user || !courseId || !text.trim()) {
-      toast.error('Cannot send empty message or no user/course selected.');
-      return;
-    }
-
+  const sendMessage = useCallback(async (text: string, deptId: string) => {
+    if (!user || !deptId || !text.trim()) return;
     setSending(true);
     const { error } = await supabase.from('chats').insert({
-      course_id: courseId,
+      department_id: deptId,
       sender_id: user.id,
       message_text: text.trim(),
     });
-
-    if (error) {
-      console.error('Error sending message:', error);
-      toast.error('Failed to send message.');
-    }
+    if (error) { toast.error('Failed to send message.'); console.error(error); }
     setSending(false);
-  }, [user, courseId]);
+  }, [user]);
 
   return { messages, loading, sending, sendMessage, refreshMessages: fetchMessages };
 };

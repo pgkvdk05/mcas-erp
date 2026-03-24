@@ -9,90 +9,98 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { useCourses } from '@/hooks/useCourses';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { useSession } from '@/components/auth/useSession';
+import { useDepartments } from '@/hooks/useDepartments';
 import PageHeader from '@/components/layout/PageHeader';
 
 const AdminChat: React.FC = () => {
   const { user } = useSession();
-  const { courses, loading: loadingCourses } = useCourses();
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-  const { messages, loading: loadingMessages, sending, sendMessage } = useChatMessages(selectedCourseId);
+  const { departments, loading: loadingDepts } = useDepartments();
+  const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
+  const { messages, loading: loadingMessages, sending, sendMessage } = useChatMessages(selectedDeptId);
   const [newMessageText, setNewMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessageText.trim() && selectedCourseId) {
-      await sendMessage(newMessageText);
+    if (newMessageText.trim() && selectedDeptId) {
+      await sendMessage(newMessageText, selectedDeptId);
       setNewMessageText('');
     }
   };
 
-  const getSenderName = (message: any) => {
-    if (message.sender_id === user?.id) return 'You';
-    return message.profiles?.first_name || message.profiles?.username || 'User';
+  const getSenderName = (msg: any) => {
+    if (msg.sender_id === user?.id) return 'You';
+    return msg.profiles?.first_name || msg.profiles?.username || 'User';
   };
 
   return (
     <MainLayout>
       <div className="space-y-6">
-        <PageHeader title="Class Chat" description="Monitor and participate in class conversations." />
+        <PageHeader title="Department Chat" description="Monitor and participate in department conversations." />
         <Card className="max-w-3xl mx-auto h-[600px] flex flex-col shadow-lg rounded-lg">
           <CardHeader className="pb-4">
-            <CardTitle className="text-2xl font-semibold">Class Discussion</CardTitle>
-            <CardDescription>Monitor and participate in any course conversation.</CardDescription>
+            <CardTitle className="text-2xl font-semibold">Department Discussion</CardTitle>
+            <CardDescription>Select a department to view and join the chat.</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col p-4 pt-0">
             <div className="mb-4 p-3 border rounded-md bg-muted/50">
-              <Label htmlFor="subject-select">Select Subject</Label>
-              <Select onValueChange={setSelectedCourseId} value={selectedCourseId || ''} disabled={loadingCourses}>
-                <SelectTrigger id="subject-select" className="mt-1">
-                  <SelectValue placeholder="Select a subject to view chat" />
+              <Label htmlFor="dept-select">Select Department</Label>
+              <Select onValueChange={setSelectedDeptId} value={selectedDeptId || ''} disabled={loadingDepts}>
+                <SelectTrigger id="dept-select" className="mt-1">
+                  <SelectValue placeholder="Select a department" />
                 </SelectTrigger>
                 <SelectContent>
-                  {loadingCourses ? <SelectItem value="loading" disabled>Loading...</SelectItem>
-                    : courses.map(course => (
-                      <SelectItem key={course.id} value={course.id}>{course.name} ({course.code})</SelectItem>
-                    ))}
+                  {departments.map(dept => (
+                    <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <ScrollArea className="flex-grow pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
               <div className="space-y-4">
-                {!selectedCourseId ? <div className="text-center text-muted-foreground py-4">Select a subject to view messages.</div>
-                  : loadingMessages ? <div className="text-center text-muted-foreground py-4">Loading messages...</div>
-                  : messages.length === 0 ? <div className="text-center text-muted-foreground py-4">No messages yet.</div>
-                  : messages.map(msg => (
-                    <div key={msg.id} className={`flex items-start gap-3 ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
-                      {msg.sender_id !== user?.id && (
-                        <Avatar className="h-8 w-8 flex-shrink-0">
-                          <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${getSenderName(msg)}`} />
-                          <AvatarFallback>{getSenderName(msg).substring(0, 2)}</AvatarFallback>
-                        </Avatar>
-                      )}
-                      <div className={`flex flex-col max-w-[70%] p-3 rounded-lg shadow-sm ${msg.sender_id === user?.id ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted rounded-bl-none'}`}>
-                        <div className="font-semibold text-sm">{getSenderName(msg)}</div>
-                        <p className="text-sm break-words">{msg.message_text}</p>
-                        <span className="text-xs opacity-70 self-end mt-1">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                      {msg.sender_id === user?.id && (
-                        <Avatar className="h-8 w-8 flex-shrink-0">
-                          <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=You`} />
-                          <AvatarFallback>You</AvatarFallback>
-                        </Avatar>
-                      )}
+                {!selectedDeptId ? (
+                  <div className="text-center text-muted-foreground py-4">Select a department to view messages.</div>
+                ) : loadingMessages ? (
+                  <div className="text-center text-muted-foreground py-4">Loading messages...</div>
+                ) : messages.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-4">No messages yet. Start the conversation!</div>
+                ) : messages.map(msg => (
+                  <div key={msg.id} className={`flex items-start gap-3 ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
+                    {msg.sender_id !== user?.id && (
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${getSenderName(msg)}`} />
+                        <AvatarFallback>{getSenderName(msg).substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div className={`flex flex-col max-w-[70%] p-3 rounded-lg shadow-sm ${msg.sender_id === user?.id ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-muted rounded-bl-none'}`}>
+                      <div className="font-semibold text-sm">{getSenderName(msg)}</div>
+                      <p className="text-sm break-words">{msg.message_text}</p>
+                      <span className="text-xs opacity-70 self-end mt-1">
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </div>
-                  ))}
+                    {msg.sender_id === user?.id && (
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=You`} />
+                        <AvatarFallback>You</AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                ))}
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input placeholder={selectedCourseId ? 'Type your message...' : 'Select a subject first'} value={newMessageText} onChange={e => setNewMessageText(e.target.value)} className="flex-grow h-10" disabled={!selectedCourseId || sending} />
-              <Button type="submit" size="icon" disabled={!selectedCourseId || sending || !newMessageText.trim()}><Send className="h-4 w-4" /></Button>
+            <form onSubmit={handleSend} className="flex gap-2">
+              <Input placeholder={selectedDeptId ? 'Type your message...' : 'Select a department first'}
+                value={newMessageText} onChange={e => setNewMessageText(e.target.value)}
+                className="flex-grow h-10" disabled={!selectedDeptId || sending} />
+              <Button type="submit" size="icon" disabled={!selectedDeptId || sending || !newMessageText.trim()}>
+                <Send className="h-4 w-4" />
+              </Button>
             </form>
           </CardContent>
         </Card>
