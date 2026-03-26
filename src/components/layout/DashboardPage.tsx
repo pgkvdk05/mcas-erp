@@ -201,6 +201,8 @@ const dashboardConfig = {
         items: [
           { name: 'Mark Attendance', href: '/erp/attendance/mark' },
           { name: 'Upload Marks', href: '/erp/marks/upload' },
+          { name: 'View Attendance', href: '/erp/attendance/all' },
+          { name: 'View All Marks', href: '/erp/marks/all' },
           { name: 'Class Chat', href: '/erp/chat/teacher', variant: 'outline' },
           { name: 'Approve OD Requests', href: '/erp/od/approve', variant: 'outline' },
         ],
