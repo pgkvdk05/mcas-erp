@@ -30,7 +30,7 @@ export const useChatMessages = (departmentId: string | null) => {
     setLoading(true);
     const { data, error } = await supabase
       .from('chats')
-      .select(`id, sender_id, message_text, created_at, profiles (first_name, last_name, username)`)
+      .select(`id, sender_id, message_text, created_at, profiles!chats_sender_id_fkey (first_name, last_name, username)`)
       .eq('department_id', departmentId)
       .order('created_at', { ascending: true });
 
