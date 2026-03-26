@@ -34,7 +34,7 @@ const TeacherChat: React.FC = () => {
 
   const getSenderName = (msg: any) => {
     if (msg.sender_id === user?.id) return 'You';
-    return msg.profiles?.first_name || msg.profiles?.username || 'Student';
+    return msg.profiles?.first_name ? `${msg.profiles.first_name}` : msg.profiles?.username || 'Unknown';
   };
 
   return (
