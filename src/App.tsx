@@ -28,7 +28,7 @@ import AuthPage from "./components/auth/AuthPage";
 import DashboardPage from "./components/layout/DashboardPage";
 import ProfilePage from "./pages/erp/ProfilePage";
 import EditUser from "./pages/erp/EditUser";
-import FeesRecords from "./pages/erp/FeesRecords"; // Import the new component
+import FeesRecords from "./pages/erp/FeesRecords";
 import { useSession } from "./components/auth/useSession";
 import { useEffect } from "react";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -46,11 +46,13 @@ const App = () => {
       const expectedDashboardPath = `/dashboard/${userRole.toLowerCase().replace('_', '-')}`;
       if (location.pathname === '/' || location.pathname.startsWith('/auth/')) {
         navigate(expectedDashboardPath, { replace: true });
-      } else if (!location.pathname.startsWith('/dashboard/') && !location.pathname.startsWith('/profile/') && !location.pathname.startsWith('/erp/')) {
+      } else if (
+        !location.pathname.startsWith('/dashboard/') &&
+        !location.pathname.startsWith('/profile/') &&
+        !location.pathname.startsWith('/erp/')
+      ) {
         navigate(expectedDashboardPath, { replace: true });
       }
-    } else if (!loading && !user) {
-      // If not logged in, and trying to access a protected route, ProtectedRoute will handle redirection to '/'
     }
   }, [user, userRole, loading, navigate]);
 
@@ -67,58 +69,56 @@ const App = () => {
       <TooltipProvider>
         <Sonner />
         <Routes>
-          {/* Public Routes */}
+
+          {/* ── Public Routes ─────────────────────────────────── */}
           <Route path="/" element={<Index />} />
-          <Route path="/auth/admin" element={<AuthPage role="ADMIN" />} />
+          <Route path="/auth/admin"   element={<AuthPage role="ADMIN" />} />
           <Route path="/auth/teacher" element={<AuthPage role="TEACHER" />} />
           <Route path="/auth/student" element={<AuthPage role="STUDENT" />} />
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-            <Route path="/dashboard/admin" element={<DashboardPage userRole="ADMIN" />} />
-            
-            <Route path="/erp/add-teacher" element={<AddTeacher />} />
-            <Route path="/erp/add-student" element={<AddStudent />} />
-            <Route path="/erp/manage-users" element={<ManageUsers />} />
-            <Route path="/erp/edit-user/:userId" element={<EditUser />} />
-            <Route path="/erp/manage-departments" element={<ManageDepartments />} />
-            <Route path="/erp/manage-courses" element={<ManageCourses />} />
-            <Route path="/erp/fees/admin" element={<AdminFees />} /> {/* Existing AdminFees route */}
-            <Route path="/erp/fees-records" element={<FeesRecords />} /> {/* New FeesRecords route */}
-            <Route path="/erp/od/approve" element={<ApproveODRequests />} />
-            <Route path="/erp/chat/admin" element={<AdminChat />} />
-            <Route path="/erp/attendance/all" element={<ViewAllAttendance />} />
-            <Route path="/erp/marks/all" element={<ViewAllMarks />} />
-          </Route>
-
+          {/* ── ADMIN only ────────────────────────────────────── */}
           <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']} />}>
-            <Route path="/dashboard/admin" element={<DashboardPage userRole="ADMIN" />} />
-            <Route path="/profile/admin" element={<ProfilePage userRole="ADMIN" />} />
-
+            <Route path="/dashboard/admin"        element={<DashboardPage userRole="ADMIN" />} />
+            <Route path="/profile/admin"          element={<ProfilePage userRole="ADMIN" />} />
+            <Route path="/erp/add-teacher"        element={<AddTeacher />} />
+            <Route path="/erp/add-student"        element={<AddStudent />} />
+            <Route path="/erp/manage-users"       element={<ManageUsers />} />
+            <Route path="/erp/edit-user/:userId"  element={<EditUser />} />
+            <Route path="/erp/manage-departments" element={<ManageDepartments />} />
+            <Route path="/erp/manage-courses"     element={<ManageCourses />} />
+            <Route path="/erp/fees/admin"         element={<AdminFees />} />
+            <Route path="/erp/fees-records"       element={<FeesRecords />} />
+            <Route path="/erp/chat/admin"         element={<AdminChat />} />
+            <Route path="/erp/attendance/all"     element={<ViewAllAttendance />} />
+            <Route path="/erp/marks/all"          element={<ViewAllMarks />} />
           </Route>
 
+          {/* ── TEACHER + ADMIN ───────────────────────────────── */}
           <Route element={<ProtectedRoute allowedRoles={['TEACHER', 'ADMIN', 'SUPER_ADMIN']} />}>
-            <Route path="/dashboard/teacher" element={<DashboardPage userRole="TEACHER" />} />
-            <Route path="/profile/teacher" element={<ProfilePage userRole="TEACHER" />} />
-            <Route path="/erp/attendance/mark" element={<MarkAttendance />} />
-            <Route path="/erp/marks/upload" element={<UploadMarks />} />
-            <Route path="/erp/teacher/classes" element={<ViewMyClasses />} />
-            <Route path="/erp/teacher/student-profiles" element={<ViewStudentProfiles />} />
-            <Route path="/erp/chat/teacher" element={<TeacherChat />} />
+            <Route path="/dashboard/teacher"             element={<DashboardPage userRole="TEACHER" />} />
+            <Route path="/profile/teacher"               element={<ProfilePage userRole="TEACHER" />} />
+            <Route path="/erp/attendance/mark"           element={<MarkAttendance />} />
+            <Route path="/erp/marks/upload"              element={<UploadMarks />} />
+            <Route path="/erp/teacher/classes"           element={<ViewMyClasses />} />
+            <Route path="/erp/teacher/student-profiles"  element={<ViewStudentProfiles />} />
+            <Route path="/erp/chat/teacher"              element={<TeacherChat />} />
+            <Route path="/erp/od/approve"                element={<ApproveODRequests />} />
           </Route>
 
+          {/* ── STUDENT + TEACHER + ADMIN ─────────────────────── */}
           <Route element={<ProtectedRoute allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'SUPER_ADMIN']} />}>
-            <Route path="/dashboard/student" element={<DashboardPage userRole="STUDENT" />} />
-            <Route path="/profile/student" element={<ProfilePage userRole="STUDENT" />} />
-            <Route path="/erp/attendance/student" element={<ViewAttendance />} />
-            <Route path="/erp/marks/student" element={<ViewMarks />} />
-            <Route path="/erp/fees/student" element={<StudentFees />} />
-            <Route path="/erp/od/request" element={<RequestOD />} />
-            <Route path="/erp/chat/student" element={<StudentChat />} />
+            <Route path="/dashboard/student"       element={<DashboardPage userRole="STUDENT" />} />
+            <Route path="/profile/student"         element={<ProfilePage userRole="STUDENT" />} />
+            <Route path="/erp/attendance/student"  element={<ViewAttendance />} />
+            <Route path="/erp/marks/student"       element={<ViewMarks />} />
+            <Route path="/erp/fees/student"        element={<StudentFees />} />
+            <Route path="/erp/od/request"          element={<RequestOD />} />
+            <Route path="/erp/chat/student"        element={<StudentChat />} />
           </Route>
 
-          {/* Catch-all for 404 - MUST be the last route */}
+          {/* ── 404 ───────────────────────────────────────────── */}
           <Route path="*" element={<NotFound />} />
+
         </Routes>
         <Analytics />
       </TooltipProvider>
