@@ -4,7 +4,6 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send } from 'lucide-react';
 import { useChatMessages } from '@/hooks/useChatMessages';
@@ -20,6 +19,7 @@ const StudentChat: React.FC = () => {
   const { messages, loading: loadingMessages, sending, sendMessage } = useChatMessages(deptId);
   const [newMessageText, setNewMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Auto-load student's department from profile
   useEffect(() => {
@@ -38,7 +38,11 @@ const StudentChat: React.FC = () => {
       });
   }, [user?.id]);
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +73,7 @@ const StudentChat: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col p-4 pt-0">
-            <ScrollArea className="flex-grow pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
+            <div ref={scrollContainerRef} className="flex-grow overflow-y-auto pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
               <div className="space-y-4">
                 {loadingProfile || loadingMessages ? (
                   <div className="text-center text-muted-foreground py-4">Loading messages...</div>
@@ -104,7 +108,7 @@ const StudentChat: React.FC = () => {
                 ))}
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
             <form onSubmit={handleSend} className="flex gap-2">
               <Input
                 placeholder={deptId ? 'Type your message...' : 'No department assigned'}

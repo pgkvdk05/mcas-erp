@@ -4,7 +4,6 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,8 +20,13 @@ const AdminChat: React.FC = () => {
   const { messages, loading: loadingMessages, sending, sendMessage } = useChatMessages(selectedDeptId);
   const [newMessageText, setNewMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +64,7 @@ const AdminChat: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            <ScrollArea className="flex-grow pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
+            <div ref={scrollContainerRef} className="flex-grow overflow-y-auto pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
               <div className="space-y-4">
                 {!selectedDeptId ? (
                   <div className="text-center text-muted-foreground py-4">Select a department to view messages.</div>
@@ -93,7 +97,7 @@ const AdminChat: React.FC = () => {
                 ))}
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
             <form onSubmit={handleSend} className="flex gap-2">
               <Input placeholder={selectedDeptId ? 'Type your message...' : 'Select a department first'}
                 value={newMessageText} onChange={e => setNewMessageText(e.target.value)}
