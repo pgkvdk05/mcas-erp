@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useSession } from '@/components/auth/SessionContextProvider';
+import { useSession } from '@/components/auth/useSession';
 import { supabase } from '@/integrations/supabase/client';
 import { showError } from '@/utils/toast';
 
