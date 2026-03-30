@@ -29,6 +29,7 @@ interface UserProfile {
   avatar_url: string | null;
   house_no: string | null;
   street_name: string | null;
+  area_name: string | null;
   city_name: string | null;
   district_name: string | null;
   state_name: string | null;
@@ -160,30 +161,15 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
             {profileData.role === 'TEACHER' && (
               <div className="space-y-4 mt-6 border-t pt-6">
                 <h3 className="text-xl font-semibold text-primary">Professional Details</h3>
-                {profileData.phone_number && (
-                  <div>
-                    <Label htmlFor="phoneNumber" className="text-sm font-medium text-muted-foreground">Phone Number</Label>
-                    <Input id="phoneNumber" value={profileData.phone_number} readOnly className="bg-muted/50 border-none mt-1" />
-                  </div>
-                )}
+
                 {profileData.highest_degree && (
                   <div>
                     <Label htmlFor="highestDegree" className="text-sm font-medium text-muted-foreground">Highest Degree</Label>
                     <Input id="highestDegree" value={profileData.highest_degree} readOnly className="bg-muted/50 border-none mt-1" />
                   </div>
                 )}
-                {profileData.years_of_experience !== null && (
-                  <div>
-                    <Label htmlFor="yearsOfExperience" className="text-sm font-medium text-muted-foreground">Years of Experience</Label>
-                    <Input id="yearsOfExperience" value={profileData.years_of_experience} readOnly className="bg-muted/50 border-none mt-1" />
-                  </div>
-                )}
-                {profileData.specialization && (
-                  <div>
-                    <Label htmlFor="specialization" className="text-sm font-medium text-muted-foreground">Specialization</Label>
-                    <Input id="specialization" value={profileData.specialization} readOnly className="bg-muted/50 border-none mt-1" />
-                  </div>
-                )}
+
+
               </div>
             )}
 
@@ -191,16 +177,46 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
               <>
                 <div className="space-y-4 mt-6 border-t pt-6">
                   <h3 className="text-xl font-semibold text-primary">Contact Information</h3>
-                  {profileData.phone_number && (
+                  {profileData.city_name && (
                     <div>
-                      <Label htmlFor="phoneNumber" className="text-sm font-medium text-muted-foreground">Student Phone Number</Label>
-                      <Input id="phoneNumber" value={profileData.phone_number} readOnly className="bg-muted/50 border-none mt-1" />
+                      <Label className="text-sm font-medium text-muted-foreground">City</Label>
+                      <Input value={profileData.city_name} readOnly className="bg-muted/50 border-none mt-1" />
                     </div>
                   )}
-                  {profileData.parent_phone_number && (
+                  {profileData.district_name && (
                     <div>
-                      <Label htmlFor="parentPhoneNumber" className="text-sm font-medium text-muted-foreground">Parent Phone Number</Label>
-                      <Input id="parentPhoneNumber" value={profileData.parent_phone_number} readOnly className="bg-muted/50 border-none mt-1" />
+                      <Label className="text-sm font-medium text-muted-foreground">District</Label>
+                      <Input value={profileData.district_name} readOnly className="bg-muted/50 border-none mt-1" />
+                    </div>
+                  )}
+                  {profileData.state_name && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">State</Label>
+                      <Input value={profileData.state_name} readOnly className="bg-muted/50 border-none mt-1" />
+                    </div>
+                  )}
+                  {profileData.country_name && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Country</Label>
+                      <Input value={profileData.country_name} readOnly className="bg-muted/50 border-none mt-1" />
+                    </div>
+                  )}
+                  {profileData.house_no && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">House No./Building</Label>
+                      <Input value={profileData.house_no} readOnly className="bg-muted/50 border-none mt-1" />
+                    </div>
+                  )}
+                  {profileData.street_name && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Street</Label>
+                      <Input value={profileData.street_name} readOnly className="bg-muted/50 border-none mt-1" />
+                    </div>
+                  )}
+                  {profileData.area_name && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Area</Label>
+                      <Input value={profileData.area_name} readOnly className="bg-muted/50 border-none mt-1" />
                     </div>
                   )}
                 </div>
