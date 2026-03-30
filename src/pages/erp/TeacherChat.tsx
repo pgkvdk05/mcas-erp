@@ -45,12 +45,12 @@ const TeacherChat: React.FC = () => {
     <MainLayout>
       <div className="space-y-6">
         <PageHeader title="Department Chat" description="Communicate with your students in real-time." />
-        <Card className="max-w-3xl mx-auto h-[600px] flex flex-col shadow-lg rounded-lg">
+        <Card className="max-w-3xl mx-auto shadow-lg rounded-lg" style={{height: "calc(100vh - 200px)", display: "flex", flexDirection: "column"}}>
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-semibold">Department Discussion</CardTitle>
             <CardDescription>Select a department to chat with students.</CardDescription>
           </CardHeader>
-          <CardContent className="flex-grow flex flex-col p-4 pt-0">
+          <CardContent className="flex flex-col p-4 pt-0" style={{flex: 1, minHeight: 0}}>
             <div className="mb-4 p-3 border rounded-md bg-muted/50">
               <Label htmlFor="dept-select">Select Department</Label>
               <Select onValueChange={setSelectedDeptId} value={selectedDeptId || ''} disabled={loadingDepts}>
@@ -64,7 +64,7 @@ const TeacherChat: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div ref={scrollContainerRef} className="flex-grow overflow-y-auto pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
+            <div ref={scrollContainerRef} style={{flex: 1, overflowY: "auto", minHeight: 0}} className="pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
               <div className="space-y-4">
                 {!selectedDeptId ? (
                   <div className="text-center text-muted-foreground py-4">Select a department to view messages.</div>

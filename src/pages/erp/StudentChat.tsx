@@ -61,7 +61,7 @@ const StudentChat: React.FC = () => {
     <MainLayout>
       <div className="space-y-6">
         <PageHeader title="Department Chat" description="Chat with your classmates and teachers." />
-        <Card className="max-w-3xl mx-auto h-[600px] flex flex-col shadow-lg rounded-lg">
+        <Card className="max-w-3xl mx-auto shadow-lg rounded-lg" style={{height: "calc(100vh - 200px)", display: "flex", flexDirection: "column"}}>
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-semibold">
               {deptName ? `${deptName} Chat` : 'Department Chat'}
@@ -72,8 +72,8 @@ const StudentChat: React.FC = () => {
                 : 'Your department chat will load automatically.'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-grow flex flex-col p-4 pt-0">
-            <div ref={scrollContainerRef} className="flex-grow overflow-y-auto pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
+          <CardContent className="flex flex-col p-4 pt-0" style={{flex: 1, minHeight: 0}}>
+            <div ref={scrollContainerRef} style={{flex: 1, overflowY: "auto", minHeight: 0}} className="pr-4 mb-4 border rounded-md p-4 bg-background shadow-inner">
               <div className="space-y-4">
                 {loadingProfile || loadingMessages ? (
                   <div className="text-center text-muted-foreground py-4">Loading messages...</div>
