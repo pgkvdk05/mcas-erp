@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useDepartments } from '@/hooks/useDepartments';
 import PageHeader from '@/components/layout/PageHeader';
-import { Loader2, User, Mail, BookOpen, MapPin, GraduationCap, Phone } from 'lucide-react';
+import { Loader2, User, BookOpen, MapPin, GraduationCap } from 'lucide-react';
 
 interface StudentProfile {
   id: string;
