@@ -37,11 +37,7 @@ interface UserProfile {
   tenth_mark_score: number | null;
   twelfth_school_name: string | null;
   twelfth_mark_score: number | null;
-  phone_number: string | null;
-  parent_phone_number: string | null;
   highest_degree: string | null;
-  years_of_experience: number | null;
-  specialization: string | null;
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = () => {
