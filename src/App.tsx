@@ -33,6 +33,7 @@ import { useSession } from "./components/auth/useSession";
 import { useEffect } from "react";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const queryClient = new QueryClient();
 
@@ -121,6 +122,7 @@ const App = () => {
 
         </Routes>
         <Analytics />
+        <SpeedInsights />
       </TooltipProvider>
     </QueryClientProvider>
   );
